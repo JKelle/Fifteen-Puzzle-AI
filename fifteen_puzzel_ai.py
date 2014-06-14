@@ -6,13 +6,9 @@ from pprint import pprint
 
 class Gamestate(object):
 
-    def __init__(self, grid, blank_loc=None):
+    def __init__(self, grid):
         self.grid = grid
-
-        if blank_loc is None:
-            self.blank_loc = self._find_16()
-        else:
-            self.blank_loc = blank_loc
+        self.num_to_pos = {grid[row][col]: (row, col) for row in range(4) for col in range(4)}
 
     def get_successor(self, action):
         """
@@ -30,13 +26,13 @@ class Gamestate(object):
         assert self._is_legal_action(action)
 
         row, col = action
-        blank_row, blank_col = self.blank_loc
+        blank_row, blank_col = self.num_to_pos[16]
         
         new_grid = copy.deepcopy(self.grid)
         new_grid[blank_row][blank_col] = new_grid[row][col]
         new_grid[row][col] = 16
 
-        return Gamestate(new_grid, (row, col))
+        return Gamestate(new_grid)
 
     def get_legal_actions(self):
         actions = [(r, c) for r in range(4) for c in range(4) if self._is_legal_action((r,c))] # slow
@@ -47,22 +43,9 @@ class Gamestate(object):
         if not 0 <= row <= 3 or not 0 <= col <= 3:
             return False
 
-        blank_row, blank_col = self.blank_loc # slow
+        blank_row, blank_col = self.num_to_pos[16]
         return (row == blank_row and abs(col - blank_col) == 1) or \
                (col == blank_col and abs(row - blank_row) == 1)
-
-    def _find_16(self):
-        """
-        :(
-        """
-        print "_find_16"
-
-        for row in range(4):
-            for col in range(4):
-                if self.grid[row][col] == 16:
-                    return row, col
-
-        raise Exception("16 not found")
 
     def __hash__(self):
         tuple_form = tuple(map(tuple, self.grid))
@@ -71,17 +54,10 @@ class Gamestate(object):
     def __eq__(self, other):
         return other.grid == self.grid
 
-goal_grid = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]]
-
 def is_goal_state(gamestate, targets):
-    grid = gamestate.grid
-
-    for row in range(4):
-        for col in range(4):
-            num = grid[row][col]
-            if num in targets and correct_locations[num] != (row, col):
-                return False
-
+    for target in targets:
+        if gamestate.num_to_pos[target] != correct_locations[target]:
+            return False
     return True
 
 correct_locations = {
@@ -166,13 +142,12 @@ def heuristic_2(gamestate):
 
 def heuristic_3(gamestate, targets):
     global correct_locations
-    grid = gamestate.grid
+    num_to_pos = gamestate.num_to_pos
     cost = 0
 
-    for row in range(4):
-        for col in range(4):
-            if grid[row][col] in targets:
-                cost += dist((row, col), correct_locations[grid[row][col]])
+    for target in targets:
+        row, col = num_to_pos[target]
+        cost += dist((row, col), correct_locations[target])
 
     return cost
 
