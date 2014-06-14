@@ -28,7 +28,7 @@ class Gamestate(object):
         row, col = action
         blank_row, blank_col = self.num_to_pos[16]
         
-        new_grid = copy.deepcopy(self.grid)
+        new_grid = [row_[:] for row_ in self.grid]
         new_grid[blank_row][blank_col] = new_grid[row][col]
         new_grid[row][col] = 16
 
