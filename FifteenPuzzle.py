@@ -21,6 +21,8 @@ sqlength = (WIDTH - startingx * 2.0) / 4.0
 board = None
 canvas = None
 
+scrambling = False
+
 lastScramble = (0,0)
 
 def init(master):
@@ -118,9 +120,14 @@ def makeMove((r, c), secondsToMove):
         canvas.update()
 
 def scramble(num_moves=100):
+    global scrambling
+    if scrambling:
+        return
+    scrambling = True
     lastScramble = None
     for i in range(num_moves):
         lastScramble = one_move(lastScramble)
+    scrambling = False
 
 def one_move(lastScramble=None):
     """
