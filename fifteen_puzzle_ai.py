@@ -1,3 +1,6 @@
+
+__author__ = "Josh Kelle"
+
 import search
 from gamestate import Gamestate
 import time
@@ -80,7 +83,7 @@ def solve_dls(start_state):
 def compare_astar_and_dls(start_state):
     """
     Compare different solutions.
-    
+
     The more coponents you break the game into, the faster it's solved, but
     it becomes further from optimal.
 
