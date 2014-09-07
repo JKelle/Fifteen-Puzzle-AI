@@ -1,1 +1,1 @@
->> python FifteenPuzzle.py
+% python FifteenPuzzle.py
