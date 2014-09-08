@@ -30,14 +30,6 @@ def init(master):
     
     canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg='WHITE')
     canvas.pack()
-
-    chicken = PhotoImage(file = './chicken-ani.gif')
-
-    label = Label(image=chicken)
-    label.image = chicken # keep a reference!
-    label.pack()
-
-    #canvas.create_image(WIDTH - 50, HEIGHT - 50, image=chicken)    
     
     board =[[],[],[],[]]
     for rowindex, row in enumerate(board):
