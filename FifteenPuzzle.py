@@ -31,13 +31,21 @@ def init(master):
     canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg='WHITE')
     canvas.pack()
 
+    chicken = PhotoImage(file = './chicken-ani.gif')
+
+    label = Label(image=chicken)
+    label.image = chicken # keep a reference!
+    label.pack()
+
+    #canvas.create_image(WIDTH - 50, HEIGHT - 50, image=chicken)    
+    
     board =[[],[],[],[]]
     for rowindex, row in enumerate(board):
         for i in range(1,5):
             board[rowindex].append(Tile(rowindex*4+i))
 
     board[-1][-1] = None
-
+    
     initTime = time.time()  
     initboard()
 
