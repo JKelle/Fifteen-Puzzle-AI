@@ -21,7 +21,7 @@ sqlength = (WIDTH - startingx * 2.0) / 4.0
 board = None
 canvas = None
 
-scrambling = False
+tilesMoving = False
 
 lastScramble = (0,0)
 
@@ -30,7 +30,7 @@ def init(master):
     
     canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg='WHITE')
     canvas.pack()
-    
+
     board =[[],[],[],[]]
     for rowindex, row in enumerate(board):
         for i in range(1,5):
@@ -132,14 +132,14 @@ def makeMove((r, c), secondsToMove):
         canvas.update()
 
 def scramble(num_moves=100):
-    global scrambling
-    if scrambling:
+    global tilesMoving
+    if tilesMoving:
         return
-    scrambling = True
+    tilesMoving = True
     lastScramble = None
     for i in range(num_moves):
         lastScramble = one_move(lastScramble)
-    scrambling = False
+    tilesMoving = False
 
 def one_move(lastScramble=None):
     """
@@ -178,6 +178,11 @@ def isLegalPosition((row, col)):
     return 0 <= row <= 3 and 0 <= col <= 3
 
 def solve():
+    global tilesMoving
+    if tilesMoving:
+        return
+    else:
+        tilesMoving = True
     nums = board_to_nums()
 
     start_state = Gamestate(nums)
@@ -194,6 +199,7 @@ def solve():
 
     for action in actions:
         makeMove(action, 0.15)
+    tilesMoving = False
 
 def board_to_nums():
     board_ = []
