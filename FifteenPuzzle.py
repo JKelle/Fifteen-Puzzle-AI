@@ -21,6 +21,8 @@ sqlength = (WIDTH - startingx * 2.0) / 4.0
 board = None
 canvas = None
 
+scrambling = False
+
 lastScramble = (0,0)
 
 def init(master):
@@ -29,13 +31,21 @@ def init(master):
     canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg='WHITE')
     canvas.pack()
 
+    chicken = PhotoImage(file = './chicken-ani.gif')
+
+    label = Label(image=chicken)
+    label.image = chicken # keep a reference!
+    label.pack()
+
+    #canvas.create_image(WIDTH - 50, HEIGHT - 50, image=chicken)    
+    
     board =[[],[],[],[]]
     for rowindex, row in enumerate(board):
         for i in range(1,5):
             board[rowindex].append(Tile(rowindex*4+i))
 
     board[-1][-1] = None
-
+    
     initTime = time.time()  
     initboard()
 
@@ -130,9 +140,14 @@ def makeMove((r, c), secondsToMove):
         canvas.update()
 
 def scramble(num_moves=100):
+    global scrambling
+    if scrambling:
+        return
+    scrambling = True
     lastScramble = None
     for i in range(num_moves):
         lastScramble = one_move(lastScramble)
+    scrambling = False
 
 def one_move(lastScramble=None):
     """
