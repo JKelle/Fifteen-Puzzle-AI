@@ -77,8 +77,9 @@ def heuristic_3(gamestate, targets):
 
     for row in range(4):
         for col in range(4):
-            if grid[row][col] in targets:
-                cost += dist((row, col), correct_locations[grid[row][col]])
+            num = grid[row][col]
+            if num in targets:
+                cost += dist((row, col), correct_locations[num])
 
     return cost
 
