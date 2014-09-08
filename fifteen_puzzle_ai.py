@@ -38,6 +38,17 @@ def solve_astar_4breaks(start_state):
 
     return solve_astar(start_state, targets_list)
 
+def solve_astar_2breaks(start_state):
+    targets_list = [[1, 2, 3, 4, 5, 6, 7, 8],
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 10, 14, 11, 12, 15, 16]]
+
+    return solve_astar(start_state, targets_list)
+
+def solve_astar_1breaks(start_state):
+    targets_list = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 10, 14, 11, 12, 15, 16]]
+
+    return solve_astar(start_state, targets_list)
+
 def solve_astar(start_state, targets_list):
     start_time = time.time()
 

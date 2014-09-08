@@ -1,5 +1,5 @@
 
-__author__ = "Dallas Kelle"
+__author__ = "Dallas Kelle, Josh Kelle"
 
 from Tkinter import *
 import time
@@ -59,6 +59,18 @@ def initboard():
     canvas.create_text((WIDTH - 2*startingx) / 4 * 3 + startingx, WIDTH + 20, text='PIZZA')
     canvas.bind('<Button-1>', clicked)
 
+def draw_time_and_moves(time, num_moves):
+    canvas.delete("solving")
+    canvas.create_text(WIDTH/2, 400,
+                       text="solved in %d moves\n(%.2f seconds)" % (num_moves, time),
+                       tag="time_and_moves")
+
+def draw_solving():
+    canvas.delete("time_and_moves")
+    canvas.create_text(WIDTH/2, 400,
+                       text="solving...",
+                       tag="solving")
+
 def clicked(event):
     c = int((event.x - startingx) / sqlength)
     r = int((event.y - startingx) / sqlength)
@@ -68,7 +80,7 @@ def clicked(event):
     #Clicked 'scramble'
     if r  == 4 and c < 2:
         print 'scrambling'
-        scramble(50)
+        scramble(20)
 
     if r == 4 and c >= 2 and c < 4:
         solve()
@@ -134,7 +146,7 @@ def one_move(lastScramble=None):
     
     neighbors = getNeighbors(blankLoc)
     neighbors = [neighbor for neighbor in neighbors if neighbor != lastScramble]
-    makeMove(random.choice(neighbors), .08)
+    makeMove(random.choice(neighbors), .06)
     
     return blankLoc
 
@@ -159,10 +171,19 @@ def isLegalPosition((row, col)):
     return 0 <= row <= 3 and 0 <= col <= 3
 
 def solve():
-    board_ = board_to_nums()
+    nums = board_to_nums()
 
-    start_state = Gamestate(board_)
+    start_state = Gamestate(nums)
+
+    draw_solving()
+    
+    start_time = time.time()
     actions = fifteen_puzzle_ai.solve_astar_7breaks(start_state)
+    elapsed_time = time.time() - start_time
+
+    pizza()
+
+    draw_time_and_moves(elapsed_time, len(actions))
 
     for action in actions:
         makeMove(action, 0.15)
