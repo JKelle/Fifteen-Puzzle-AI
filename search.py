@@ -12,58 +12,46 @@ from gamestate import Gamestate, correct_locations
 from priority_queue import PriorityQueue
 import time
 
+
 ##############
 # heuristics #
 ##############
 
 def dist((a,b), (x,y)):
+    """
+    manhattan distance
+    """
     return abs(a-x) + abs(b-y)
 
+
 def heuristic_0(gamestate):
+    """
+    null heuristic
+    """
     return 0
 
+
 def heuristic_1(gamestate):
+    """
+    Add 1 for each tile which is out of place.
+    """
+    global correct_locations
     grid = gamestate.grid
     cost = 0
-    if grid[0][0] != 1:
-        cost += 1
-    if grid[0][1] != 2:
-        cost += 1
-    if grid[0][2] != 3:
-        cost += 1
-    if grid[0][3] != 4:
-        cost += 1
 
-    if grid[1][0] != 5:
-        cost += 1
-    if grid[1][0] != 6:
-        cost += 1
-    if grid[1][1] != 7:
-        cost += 1
-    if grid[1][2] != 8:
-        cost += 1
-
-    if grid[2][0] != 9:
-        cost += 1
-    if grid[2][0] != 10:
-        cost += 1
-    if grid[2][1] != 11:
-        cost += 1
-    if grid[2][2] != 12:
-        cost += 1
-
-    if grid[3][0] != 13:
-        cost += 1
-    if grid[3][0] != 14:
-        cost += 1
-    if grid[3][1] != 15:
-        cost += 1
-    if grid[3][2] != 16:
-        cost += 1
+    for row in range(4):
+        for col in range(4):
+            if (row, col) != correct_locations[grid[row][col]]:
+                cost += 1
 
     return cost
 
+
 def heuristic_2(gamestate):
+    """
+    For each tile, add manhattan distance from tile's current location
+    to it's goal location.
+    """
     global correct_locations
     grid = gamestate.grid
     cost = 0
@@ -74,7 +62,15 @@ def heuristic_2(gamestate):
 
     return cost
 
+
 def heuristic_3(gamestate, targets):
+    """
+    Same as heuristic_2, but only consider certain tiles.
+
+    parameters:
+    targets -- list of integers. These are the tiles which count towards
+               the heuristic value.
+    """
     global correct_locations
     grid = gamestate.grid
     cost = 0
@@ -85,6 +81,7 @@ def heuristic_3(gamestate, targets):
                 cost += dist((row, col), correct_locations[grid[row][col]])
 
     return cost
+
 
 ######
 # A* #
@@ -114,7 +111,6 @@ def astar(start_gamestate,
     while not cur_state.is_goal_state(targets):
         
         # print info to the screen
-        # doesn't actually do anything for the search
         # pretty poor way to track program's progress
         if not q and len(cur_actions) > prev_len:
             print len(cur_actions), time.time() - start_time
@@ -144,11 +140,17 @@ def astar(start_gamestate,
 
     return cur_actions, cur_state
 
+
 ########################
 # depth limited search #
 ########################
 
 def iterative_deepening_dfs(start_state):
+    """
+    Iterative deepening depth first search.
+
+    Return a list of actions. Actions are (row, col) tuples.
+    """
     depth_limit = 0
     is_solved = False
     
@@ -160,16 +162,30 @@ def iterative_deepening_dfs(start_state):
     assert is_solved
     return actions_to_solution
 
+
 def dls(start_state, max_depth):
     """
+    Depth limited search.
+    
     Do dfs treating nodes at max_depth as leaves.
     Don't stop on first solution; remember all solutions and return the best one.
     """
     return dls_helper(start_state, [], 0, max_depth)
 
+
 def dls_helper(cur_state, actions_so_far, depth, depth_limit):
     """
-    return -- (is_solved, actions) tuple, where is_solved is True or False.
+    Recursive helper function for dls.
+
+    parameters:
+    cur_state -- Gamestate
+    actions_so_far -- a list of actions that will take you from the
+                      start_state (given in dls) to the cur_state.
+    depth -- current depth in the search tree
+    depth_limit -- do not search in depths that exceed depth_limit.
+                   Treat nodes at this depth as leaves.
+
+    Return -- (is_solved, actions) tuple, where is_solved is True or False.
               If is_solved is True, actions = a list of all actions to get form
               start_state (in dfs function) to goal state.
     """
@@ -193,5 +209,4 @@ def dls_helper(cur_state, actions_so_far, depth, depth_limit):
         assert prev_action == action
 
     return False, actions_so_far
-
 
