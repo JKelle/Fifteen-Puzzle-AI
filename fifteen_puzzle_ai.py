@@ -21,6 +21,16 @@ def solve_astar_7breaks(start_state):
 
     return solve_astar(start_state, targets_list)
 
+def solve_astar_6breaks(start_state):
+    targets_list = [[1, 2],
+                    [1, 2, 3, 4],
+                    [1, 2, 3, 4, 5, 6, 7, 8],
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 13],
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 10, 14],
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 10, 14, 11, 12, 15, 16]]
+
+    return solve_astar(start_state, targets_list)
+
 def solve_astar_5breaks(start_state):
     targets_list = [[1, 2, 3, 4],
                     [1, 2, 3, 4, 5, 6, 7, 8],
