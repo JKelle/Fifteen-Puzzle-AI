@@ -58,25 +58,13 @@ def initboard():
     canvas.create_text((WIDTH - 2*startingx) / 4 + startingx, WIDTH + 20, text='scramble')
 
     canvas.create_rectangle(startingx + (WIDTH - 2*startingx) / 2 + 10, WIDTH, WIDTH - startingx, WIDTH + 40)
-    canvas.create_text((WIDTH - 2*startingx) / 4 * 3 + startingx, WIDTH + 20, text='PIZZA')
+    canvas.create_text((WIDTH - 2*startingx) / 4 * 3 + startingx, WIDTH + 20, text='solve')
     canvas.bind('<Button-1>', clicked)
     canvas.create_text(WIDTH/2, 400, text = "", tag = "boardtext")
 
 
 def change_board_text(text):
     canvas.itemconfig("boardtext", text = text)
-
-def draw_time_and_moves(time, num_moves):
-    canvas.delete("solving")
-    canvas.create_text(WIDTH/2, 400,
-                       text="solved in %d moves\n(%.2f seconds)" % (num_moves, time),
-                       tag="time_and_moves")
-
-def draw_solving():
-    canvas.delete("time_and_moves")
-    canvas.create_text(WIDTH/2, 400,
-                       text="solving...",
-                       tag="solving")
 
 def clicked(event):
     c = int((event.x - startingx) / sqlength)
@@ -138,17 +126,21 @@ def makeMove((r, c), secondsToMove):
 
 def scramble(num_moves=100):
     global tilesMoving
+    
     if tilesMoving:
         return
-    change_board_text("Scrambling with "+str(num_moves)+" moves.")
+
     tilesMoving = True
+    change_board_text("scrambling with %d moves" % num_moves)
+    
     lastScramble = None
     for i in range(num_moves):
-        lastScramble = one_move(lastScramble)
-    tilesMoving = False
+        lastScramble = move_random(lastScramble)
+    
     change_board_text("")
+    tilesMoving = False
 
-def one_move(lastScramble=None):
+def move_random(lastScramble=None):
     """
     1. find blank location
     2. board.getNeighbors()
@@ -186,16 +178,17 @@ def isLegalPosition((row, col)):
 
 def solve():
     global tilesMoving
+    
     if tilesMoving:
         return
     else:
         tilesMoving = True
-    change_board_text("Solving...")
+    
+    change_board_text("solving...")
+    canvas.update()
+
     nums = board_to_nums()
-
     start_state = Gamestate(nums)
-
-    #draw_solving()
     
     start_time = time.time()
     actions = fifteen_puzzle_ai.solve_astar_7breaks(start_state)
@@ -203,11 +196,11 @@ def solve():
 
     pizza()
 
-    change_board_text("Solved in "+ str(elapsed_time)[:4]+" seconds and " + str(len(actions)) +" moves.")
-    #draw_time_and_moves(elapsed_time, len(actions))
+    change_board_text("solved in %d moves (%.2f seconds)" % (len(actions), elapsed_time))
 
     for action in actions:
         makeMove(action, 0.15)
+
     tilesMoving = False
 
 def board_to_nums():
