@@ -88,10 +88,7 @@ def heuristic_3(gamestate, targets):
 # A* #
 ######
 
-def astar(start_gamestate,
-          heuristic=heuristic_3,
-          targets=range(1,17),
-          q=False):
+def astar(start_gamestate, heuristic=heuristic_3, targets=range(1,17), q=False):
     """
     parameters:
     start_gamestate -- a Gamestate object
@@ -107,7 +104,7 @@ def astar(start_gamestate,
     prev_len = -1
 
     fringe = PriorityQueue()
-    visited_states = set()
+    visited_states = set([cur_state])
 
     while not cur_state.is_goal_state(targets):
         
@@ -116,9 +113,6 @@ def astar(start_gamestate,
         if not q and len(cur_actions) > prev_len:
             print len(cur_actions), time.time() - start_time
             prev_len = len(cur_actions)
-        
-        # remember state as visited
-        visited_states.add(cur_state)
 
         # push neighboring states onto fringe
         for action in cur_state.get_legal_actions():
@@ -129,15 +123,12 @@ def astar(start_gamestate,
                 # g = len(cur_actions) + 1
                 # h = heuristic
                 priority = len(cur_actions) + 1 + heuristic(cur_state, targets)
+                # remember state as visited
+                visited_states.add(successor)
                 fringe.push( (successor, cur_actions + [action]), priority )
 
         # get next state from fringe, skipping ones we've seen already
-        next_state, actions_to_next_state = fringe.pop()
-        while next_state in visited_states:
-            next_state, actions_to_next_state = fringe.pop()
-
-        cur_actions = actions_to_next_state
-        cur_state = next_state
+        cur_state, cur_actions = fringe.pop()
 
     return cur_actions, cur_state
 
